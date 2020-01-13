@@ -1,5 +1,8 @@
 package Leetcode;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 public class 推箱子 {
     /**
      * 推箱子是一种风靡全球的益智小游戏，玩家需要将箱子推到仓库的目标位置。
@@ -13,7 +16,65 @@ public class 推箱子 {
      * 玩家无法越过箱子。
      * 返回将箱子推到目标位置的最小推动次数，如果无法做到，返回-1.
      */
+    int[] sha = {-1, 1, 0, 0};
+    int[] xia = {0, 0, -1, 1};
+    int[] zuo = {1, -1, 0, 0};
+    int[] you = {0, 0, 1, -1};
+
+    class Point {
+        int ss, xx;
+        int zz, yy;
+        int step;
+
+        public Point(int ss, int xx, int zz, int yy, int step) {
+            this.ss = ss;
+            this.xx = xx;
+            this.zz = zz;
+            this.yy = yy;
+            this.step = step;
+        }
+    }
+
+    class Person {
+        int zz;
+        int yy;
+
+        public Person(int zz, int yy) {
+            this.zz = zz;
+            this.yy = yy;
+        }
+
+    }
+
+    Point pos;
+    int ans;
+
+    public boolean bfsp(char[][] grid, int n, int m, int zz, int yy, int targetx, int targety, int ss, int xx) {
+        boolean[][] flag = new boolean[n][m];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                flag[i][j] = false;
+            }
+        }
+        Queue<Person> queue = new LinkedList<>();
+        queue.offer(new Person(zz, yy));
+        flag[zz][yy] = true;
+        while (!queue.isEmpty()) {
+            Person tmp = queue.poll();
+            if (tmp.zz == targetx && tmp.yy == targety) return true;
+            if (tmp.zz == ss && tmp.yy == xx) continue;
+            for (int i = 0; i < 4; i++) {
+
+            }
+        }
+            return false;
+        }
+
+
+
+
     public static void main(String[] args) {
 
     }
 }
+
