@@ -1,0 +1,35 @@
+package Leetcode;
+
+public class 环形链表2 {
+    public static class ListNode {
+        int val;
+        ListNode next;
+
+        public ListNode(int val, ListNode next) {
+            this.val = val;
+            this.next = next;
+        }
+
+        public int getVal() {
+            return val;
+        }
+
+        public void setVal(int val) {
+            this.val = val;
+        }
+
+        public ListNode getNext() {
+            return next;
+        }
+
+        public void setNext(ListNode next) {
+            this.next = next;
+        }
+
+        ListNode(int x) { val = x; }
+    }
+
+    public static void main(String[] args) {
+
+    }
+}
