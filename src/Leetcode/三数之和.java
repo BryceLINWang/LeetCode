@@ -11,10 +11,10 @@ public class 三数之和 {
         List<List<Integer>>listList=new ArrayList<>();
         Arrays.sort(nums);
         for(int i=0;i<nums.length;i++){
-            if(nums[i]>0){
+            if(nums[i]>0){//通过负数元素判断
                 break;
             }
-            if(i>0&&nums[i]==nums[i-1]){
+            if(i>0&&nums[i]==nums[i-1]){//排除重复元素
                 continue;
             }
             int left=i+1,right=nums.length-1;
@@ -38,7 +38,7 @@ public class 三数之和 {
                     while (left<right&&nums[left]==nums[left-1]){
                     left++;
                     }
-                }else {
+                }else {//总和大减少右边界
                     right--;
                     while (left<right&&nums[right]==nums[right+1]){
                     right--;
