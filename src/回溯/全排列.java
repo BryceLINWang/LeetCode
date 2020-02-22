@@ -4,24 +4,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class 全排列 {
-    public List<List<Integer>> permute(int[] nums) {
+    public static List<List<Integer>> permute(int[] nums) {
         List<List<Integer>>res=new ArrayList<>();
-
+        int len=nums.length;
+        if(len==0){
+            return res;
+        }
+        boolean []booleans=new boolean[len];
+        dfs(nums,len,0,booleans,res,new ArrayList<Integer>());
         return res;
     }
-    private static void dfs(String cur, int left, int right, List<String> res,int n) {
-        if(cur.length()==n*2){
-            res.add(cur);
-            return;
+    private static void dfs(int []nums, int len,int depth,boolean []booleans,List<List<Integer>>res,ArrayList<Integer> tmp) {
+        if(depth==len) {
+            res.add(new ArrayList<>(tmp));
         }
-        if (left<right){//剪枝
-            return;
+        for (int j=0;j<nums.length;j++){
+            if(!booleans[j]) {
+                tmp.add(nums[j]);
+                booleans[j]=true;
+                dfs(nums, len, depth+1, booleans, res, tmp);
+                booleans[j] = false;
+                tmp.remove(depth);
+            }
         }
-        if (left<n){
-            dfs(cur+"(",left+1,right,res,n);
-        }
-        if (right<n){
-            dfs(cur+")",left,right+1,res,n);
-        }
+    }
+
+    public static void main(String[] args) {
+        int []nums={1,2,3};
+        System.out.println(permute(nums));
     }
 }
