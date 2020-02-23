@@ -16,6 +16,7 @@ public class 全排列 {
     }
     private static void dfs(int []nums, int len,int depth,boolean []booleans,List<List<Integer>>res,ArrayList<Integer> tmp) {
         if(depth==len) {
+            // Java 中可变对象是引用传递，因此需要将当前 path 里的值拷贝出来
             res.add(new ArrayList<>(tmp));
         }
         for (int j=0;j<nums.length;j++){
