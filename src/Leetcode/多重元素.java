@@ -5,10 +5,7 @@ public class 多重元素 {
         return getMajority(nums, 0, nums.length - 1);
     }
 
-    /**
-     * 递归分治地求解子数组的众数
-     * @param 子数组以及子数组首尾元素的下标
-     */
+
     private int getMajority(int[] a, int lo, int hi) {
         if(hi == lo)    return a[lo];
         int mid = lo + (hi - lo) / 2;
