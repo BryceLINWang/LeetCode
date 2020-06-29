@@ -23,6 +23,17 @@ public class 整数反转 {
 
         // return flag==true?-Integer.valueOf(str):Integer.valueOf(str);
       int temp=0;
+      while(x!=0){
+         int pop=x%10;
+         x/=10;
+         if(temp>Integer.MAX_VALUE/10||temp==Integer.MAX_VALUE/10&&pop>7){
+             return 0;
+         }
+          if(temp<Integer.MIN_VALUE/10||temp==Integer.MIN_VALUE/10&&pop<-8){
+              return 0;
+          }
+         temp=temp*10+pop;
+      }
       return temp;
     }
 }
