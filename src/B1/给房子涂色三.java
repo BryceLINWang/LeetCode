@@ -27,7 +27,7 @@ public class 给房子涂色三 {
         // 初始化第0个房子
         // 第0个房子已经涂色
         if(houses[0]>0){
-            dp[0][1][houses[0]]=0;
+            dp[0][1][houses[0]]=0;//无花费
         }else {
             // 第0个房子没有涂色，初始化cost
             for(int i = 1; i <= n; i++){
