@@ -11,6 +11,9 @@ package Singletion;
  */
 public class Mgr04 {
     private static volatile Mgr04 INSTANCE;//JIT
+    //加volatile的原因禁止指令重排序
+    //防止多线程访问时发生指令重排序
+    //导致线程2使用了半初始化对象
     private Mgr04(){
 
     }
