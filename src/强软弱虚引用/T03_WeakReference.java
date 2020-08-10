@@ -5,8 +5,10 @@ import java.lang.ref.WeakReference;
 public class T03_WeakReference {
     public static void main(String[] args) {
         WeakReference<M>m=new WeakReference<>(new M());
+        //m->WR 强引用
+        //WR-----M 弱引用
         System.out.println(m.get());
-        System.gc();
+        System.gc();//一次性 调用垃圾回收器后直接被垃圾回收
         System.out.println(m.get());
 
         ThreadLocal<M>tl=new ThreadLocal<>();
