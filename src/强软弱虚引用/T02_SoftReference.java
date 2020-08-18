@@ -2,6 +2,9 @@ package 强软弱虚引用;
 
 import java.lang.ref.SoftReference;
 
+/**
+ * 软引用在内存不足时会被回收
+ */
 public class T02_SoftReference {
     public static void main(String[] args) {
         SoftReference<byte[]>m=new SoftReference<>(new byte[1024*1024*10]);//用了10M 堆总共20M
@@ -22,3 +25,4 @@ public class T02_SoftReference {
     }
 }
 //软引用非常适合缓存使用
+//创建缓存时，创建的对象放进缓存中，当内存不足时，JVN就会回收早先创建的对象

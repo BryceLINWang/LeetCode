@@ -2,6 +2,7 @@ package 强软弱虚引用;
 
 import java.lang.ref.WeakReference;
 //弱引用***
+//适用场景：一旦不需要JVM就会回收他 无需多余操作
 public class T03_WeakReference {
     public static void main(String[] args) {
         WeakReference<M>m=new WeakReference<>(new M());
