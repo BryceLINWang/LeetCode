@@ -1,4 +1,4 @@
-package 排序;
+package 排序.桶排序;
 
 import java.util.Arrays;
 
