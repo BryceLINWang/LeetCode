@@ -1,5 +1,8 @@
 package revi;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class 两数相加 {
     public static class ListNode{
         int val;
