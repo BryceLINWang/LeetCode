@@ -21,11 +21,15 @@ public class 比较版本号 {
     }
 
     public static void main(String[] args) {
+
         Scanner sc=new Scanner(System.in);
         while (sc.hasNext()){
             String ve1=sc.nextLine();
             String ve2=sc.nextLine();
             System.out.println(compareVersion(ve1,ve2));
         }
+        System.out.println(Integer.parseInt("0001"));
+        System.out.println(Integer.parseInt("-0001"));
+       System.out.println(Integer.parseInt("-0.001"));
     }
 }

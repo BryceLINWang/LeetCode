@@ -1,10 +1,11 @@
 package Leetcode;
 
+import java.util.Arrays;
 import java.util.Hashtable;
 
 public class LRUCache {
     private int size;
-    private int capacity;
+    private int k;
     private DNode head,tail;
     private Hashtable<Integer,DNode>cahe=
             new Hashtable<Integer, DNode>();
@@ -36,14 +37,7 @@ public class LRUCache {
         return res;
     }
 
-    public LRUCache(int capacity) {
-    this.size=0;
-    this.capacity=capacity;
-    head=new DNode();
-    tail=new DNode();
-    head.next=tail;
-    tail.prev=head;
-    }
+
 
     public int get(int key) {
     DNode node=cahe.get(key);
@@ -61,7 +55,7 @@ public class LRUCache {
          cahe.put(key,newnode);
          addNode(newnode);
          ++size;
-         if (size>capacity){
+         if (size>k){
              DNode tail=popTail();
              cahe.remove(tail.key);
              --size;
@@ -70,10 +64,29 @@ public class LRUCache {
          node.value=value;
          moveToHead(node);
      }
+
+        }
+    public int[] LRU(int[][] operators,int k){
+        this.size=0;
+        this.k=k;
+        //链表勾连初始化
+        head.next=tail;
+        tail.prev=head;
+        //opt首元素为2的个数
+        int len = (int) Arrays.stream(operators).filter(x -> x[0] == 2).count();
+        int []res=new int[len];
+        for(int i=0,j=0;i<operators.length;i++){
+            if(operators[i][0]==1){//opt=1
+                put(operators[i][1],operators[i][2]);
+            }else {//opt=2
+                res[j++]=get(operators[i][1]);
+            }
+        }
+        return res;
     }
 
     public static void main(String[] args) {
-        LRUCache cache=new LRUCache(2);
+        LRUCache cache=new LRUCache();
 
     }
 }
