@@ -7,6 +7,7 @@ public class 验证回文串 {
         while (i<j){
             char l=s.charAt(i);
             char r=s.charAt(j);
+            //大小写字母ascll差空格（32）
             if (l>= 'A' && l <= 'Z') {
                 l+= ' ';
             }else if(!(l >= 'a' && l <= 'z' || l >= '0' && l <= '9')){
