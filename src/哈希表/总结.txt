@@ -1,0 +1,149 @@
+总结
+
+默认初始容量为16，默认负载因子为0.75
+threshold = 数组长度 * loadFactor，当元素个数大于等于threshold(容量阈值)时，HashMap会进行扩容操作
+table数组中存放指向链表的引用
+这里需要注意的一点是table数组并不是在构造方法里面初始化的，它是在resize(扩容)方法里进行初始化的。
+
+这里说句题外话：可能有刁钻的面试官会问为什么默认初始容量要设置为16？为什么负载因子要设置为0.75？
+为什么初始容量不设计成4、8或者32....
+其实这是JDK设计者经过权衡之后得出的一个比较合理的数字，，如果默认容量是8的话，
+当添加到第6个元素的时候就会触发扩容操作，扩容操作是非常消耗CPU的，32的话如果只添加少量元素则会浪费内存，
+因此设计成16是比较合适的，负载因子也是同理。
+
+table数组长度永远为2的幂次方
+众所周知，HashMap数组长度永远为2的幂次方(指的是table数组的大小)，那你有想过为什么吗？
+
+首先我们需要知道HashMap是通过一个名为tableSizeFor的方法来确保HashMap数组长度永远为2的幂次方的，源码如下：
+
+/*找到大于或等于 cap 的最小2的幂，用来做容量阈值*/
+static final int tableSizeFor(int cap) {
+    int n = cap - 1;
+    n |= n >>> 1;
+    n |= n >>> 2;
+    n |= n >>> 4;
+    n |= n >>> 8;
+    n |= n >>> 16;
+    return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
+}
+tableSizeFor的功能（不考虑大于最大容量的情况）是返回大于等于输入参数且最近的2的整数次幂的数。比如10，则返回16。
+
+该算法让最高位的1后面的位全变为1。最后再让结果n+1，即得到了2的整数次幂的值了。
+
+查找流程：
+首先通过自定义的hash方法计算出key的hash值，求出在数组中的位置
+判断该位置上是否有节点，若没有则返回null，代表查询不到指定的元素
+若有则判断该节点是不是要查找的元素，若是则返回该节点
+若不是则判断节点的类型，如果是红黑树的话，则调用红黑树的方法去查找元素
+如果是链表类型，则遍历链表调用equals方法去查找元素
+
+HashMap的查找是非常快的，要查找一个元素首先得知道key的hash值，在HashMap中并不是直接通过key的hashcode方法获取哈希值，而是通过内部自定义的hash方法计算哈希值，我们来看看其实现：
+
+static final int hash(Object key) {
+    int h;
+ return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+}
+(h = key.hashCode()) ^ (h >>> 16) 是为了让高位数据与低位数据进行异或，变相的让高位数据参与到计算中，int有 32 位，右移16位就能让低16位和高16位进行异或，也是为了增加hash值的随机性。
+
+插入流程：
+当table数组为空时，通过扩容的方式初始化table
+通过计算键的hash值求出下标后，若该位置上没有元素(没有发生hash冲突)，则新建Node节点插入
+若发生了hash冲突，遍历链表查找要插入的key是否已经存在，存在的话根据条件判断是否用新值替换旧值
+如果不存在，则将元素插入链表尾部，并根据链表长度决定是否将链表转为红黑树
+判断键值对数量是否大于等于阈值，如果是的话则进行扩容操作
+从源码也可以看出table数组是在第一次调用put方法后才进行初始化的。
+这里还有一个知识点就是在JDK1.8版本HashMap是在链表尾部插入元素的，而在1.7版本里是插入链表头部的，1.7版本这么设计的原因可能是作者认为新插入的元素使用到的频率会比较高，插入头部的话可以减少遍历次数。
+
+那为什么1.8改成尾插法了呢？主要是因为头插法在多线程环境下可能会导致两个节点互相引用，形成死循环，
+
+删除流程：
+定位桶位置
+遍历链表找到相等的节点
+第三步删除节点
+
+删除节点后可能破坏了红黑树的平衡性质，removeTreeNode方法会对红黑树进行变色、旋转等操作来保持红黑树的平衡结构，
+/////////////////////////////////////////////////////////
+遍历
+在工作中HashMap的遍历操作也是非常常用的，也许有很多小伙伴喜欢用for-each来遍历，但是你知道其中有哪些坑吗？
+
+看下面的例子，当我们在遍历HashMap的时候，若使用remove方法删除元素时会抛出ConcurrentModificationException异常
+
+    Map<String, Integer> map = new HashMap<>();
+ map.put("1", 1);
+ map.put("2", 2);
+ map.put("3", 3);
+ for (String s : map.keySet()) {
+ if (s.equals("2"))
+ map.remove("2");
+        }
+这就是常说的fail-fast(快速失败)机制，这个就需要从一个变量说起
+
+transient int modCount;
+在HashMap中有一个名为modCount的变量，它用来表示集合被修改的次数，
+修改指的是插入元素或删除元素，可以回去看看上面插入删除的源码，在最后都会对modCount进行自增。
+
+当我们在遍历HashMap时，每次遍历下一个元素前都会对modCount进行判断，
+若和原来的不一致说明集合结果被修改过了，然后就会抛出异常，这是Java集合的一个特性
+
+那么如何在遍历时删除元素呢？
+
+我们可以看看迭代器自带的remove方法，其中最后两行代码如下：
+
+removeNode(hash(key), key, null, false, false);//调用外部的removeNode
+expectedModCount = modCount;
+意思就是会调用外部remove方法删除元素后，把modCount赋值给expectedModCount，这样的话两者一致就不会抛出异常了，所以我们应该这样写：
+
+Map<String, Integer> map = new HashMap<>();
+        map.put("1", 1);
+        map.put("2", 2);
+        map.put("3", 3);
+        Iterator<String> iterator = map.keySet().iterator();
+ while (iterator.hasNext()){
+ if (iterator.next().equals("2"))
+                iterator.remove();
+        }
+
+在遍历HashMap时，我们会发现遍历的顺序和插入的顺序不一致，这是为什么？
+在HashIterator源码里面可以看出，它是先从桶数组中找到包含链表节点引用的桶。然后对这个桶指向的链表进行遍历。遍历完成后，再继续寻找下一个包含链表节点引用的桶，
+找到继续遍历。找不到，则结束遍历。
+equasl和hashcode
+我在面试中就被问到过HashMap的key有什么限制吗？相信很多人都知道HashMap的key需要重写equals和hashcode方法。
+
+为什么HashMap的key需要重写equals()和hashcode()方法？
+
+简单看个例子，这里以Person为例：
+
+public class Person {
+    Integer id;
+    String name;
+
+ public Person(Integer id, String name) {
+ this.id = id;
+ this.name = name;
+    }
+
+ @Override
+ public boolean equals(Object obj) {
+ if (obj == null) return false;
+ if (obj == this) return true;
+ if (obj instanceof Person) {
+            Person person = (Person) obj;
+ if (this.id == person.id)
+ return true;
+        }
+ return false;
+    }
+
+ public static void main(String[] args) {
+        Person p1 = new Person(1, "aaa");
+        Person p2 = new Person(1, "bbb");
+        HashMap<Person, String> map = new HashMap<>();
+        map.put(p1, "这是p1");
+        System.out.println(map.get(p2));
+    }
+}
+原生的equals方法是使用==来比较对象的
+原生的hashCode值是根据内存地址换算出来的一个值
+Person类重写equals方法来根据id判断是否相等，当没有重写hashcode方法时，插入p1后便无法用p2取出元素，这是因为p1和p2的哈希值不相等。
+
+HashMap插入元素时是根据元素的哈希值来确定存放在数组中的位置，因此HashMap的key需要重写equals和hashcode方法。
