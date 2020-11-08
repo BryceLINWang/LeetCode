@@ -27,14 +27,14 @@ class Node{
 }
 public class 反转 {
     public static Node helper(Node root){
-        Node cur=root;
-        while(cur!=null){
-            Node tmp=cur.next;
-
-            cur=cur.next;
-            cur.next=tmp;
-            cur=tmp;
+        Node cur=null;
+        while(root!=null){
+            Node tmp=root.next;
+            root.next=cur;
+            cur=root;
+            root=tmp;
         }
+        return cur;
     }
     public static void main(String[] args) {
 
